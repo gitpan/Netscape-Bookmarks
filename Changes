@@ -1,5 +1,14 @@
 Revision history for Perl extension Netscape::Bookmarks.
 
-0.01  Sun Sep 12 22:07:18 1999
+0.91  Fri Dec 24 23:58:01 1999
+	- ALPHA ALPHA ALPHA! interfaces may still change!
 	- original version; created by h2xs 1.18
-
+	- this is the initial release.  the docs need a bit of
+	work and there are a few features to add, but this does
+	the stuff that i needed to do at the moment.
+	- the next thing to do is come up with an internal
+	representation that is portable - perhaps XML.  If all
+	bookmark formats can be reduced to the same XML, then
+	translation should be a cinch :)
+	- there is also a URI::Bookmarks module, but it doesn't
+	do aliases and separators.
