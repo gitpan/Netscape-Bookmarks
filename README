@@ -1,0 +1,27 @@
+Netscape::Bookmarks
+Kirrily 'Skud' Robert <skud@netizen.com.au>
+Version 0.01 1999-09-12
+
+This module allows you to retrieve Netscape bookmark files into
+a Perl data structure (either an array or a list-of-lists).
+
+You need HTML::Parser (well, HTML::TokeParser to be exact) to 
+use this module, but that's part of the standard distribution, 
+so you should be fine.
+
+To install:
+
+  tar -xzvf Netscape-Bookmarks-0.01.tar.gz
+  cd Netscape-Bookmarks-0.01
+  perl Makefile.PL
+  make
+  make install
+
+A demo script (bmgrep) is included in the scripts directory.  This 
+script allows you to grep your Netscape bookmarks file either by
+URL or name, eg 'bmgrep -i skud' would search (case-insensitively) 
+for 'Skud'.
+
+This source code may be modified and redistributed under the same
+licensing terms as Perl itself.
+
