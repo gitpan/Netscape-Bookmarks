@@ -1,5 +1,6 @@
 package Netscape::Bookmarks::Link;
-# $Id: Link.pm,v 1.5 2002/09/24 01:29:32 comdog Exp $
+# $Revision: 1.5 $
+# $Id: Link.pm,v 1.5 2004/09/16 01:48:30 comdog Exp $
 
 =head1 NAME
 
@@ -52,18 +53,9 @@ file.  A link has these attributes, only some of which may be present:
 	ALIAS_OF
 	ALIAS_ID
 
-Additionally, Mozilla (the open source version of Navigator) uses these
-attributes:
+These are explained below.
 
-	SHORTCUTURL
-	ICON
-	SCHEDULE
-	LAST_PING
-	LAST_CHARSET
-	PING_CONTENT_LEN
-	PING_STATUS
-	
-=head1 METHODS
+=head2 Methods
 
 =over 4
 
@@ -74,9 +66,6 @@ use strict;
 use subs qw();
 use vars qw($DEBUG $VERSION $ERROR @EXPORT @EXPORT_OK @ISA);
 
-use Netscape::Bookmarks;
-use Netscape::Bookmarks::AcceptVisitor;
-
 use Exporter;
 
 use URI::URL;
@@ -85,7 +74,7 @@ use URI::URL;
 
 @EXPORT    = qw();
 @EXPORT_OK = qw();
-@ISA       = qw(Netscape::Bookmarks::AcceptVisitor);
+@ISA       = qw();
 
 =item Netscape::Bookmarks::Link-E<gt>new( \%hash )
 
@@ -99,10 +88,6 @@ link:
 	LAST_VISIT
 	ALIASID
 	ALIASOF
-	
-	SHORTCUTURL
-	ICON
-	LAST_CHARSET
 
 =cut
 
@@ -122,13 +107,7 @@ sub new
 		}
 	$self->{HREF} = $url;
 
-	foreach my $k ( qw(SHORTCUTURL ICON LAST_CHARSET SCHEDULE PING_STATUS) )
-		{
-		$self->{$k} = $param->{$k};
-		}
-		
-	foreach my $k ( qw(ADD_DATE LAST_MODIFIED LAST_VISIT ALIASID ALIASOF
-		LAST_PING PING_CONTENT_LEN) )
+	foreach my $k ( qw(ADD_DATE LAST_MODIFIED LAST_VISIT ALIASID ALIASOF) )
 		{
 		if( defined $param->{$k} and $param->{$k} =~ /\D/ )
 			{
@@ -152,6 +131,7 @@ sub new
 	}
 
 
+
 =item $obj->href
 
 Returns the URL of the link.  The URL appears in the HREF attribute of
@@ -163,7 +143,7 @@ sub href
 	{
 	my $self = shift;
 
-	$self->{'HREF'}->as_string
+	($self->{'HREF'})->as_string
 	}
 
 =item $obj->add_date
@@ -207,36 +187,28 @@ sub last_visit
 	$self->{'LAST_VISIT'}
 	}
 
-=item $obj->title( [ TITLE ] )
+=item $obj->title
 
-Sets the link title with the given argument, and returns the link title.
-If the argument is not defined (e.g. not specified), returns the current
-link title.
+Returns the link title.
 
 =cut
 
 sub title
 	{
-	my( $self, $title ) = @_;
-
-	$self->{'TITLE'} = $title if defined $title;
+	my $self = shift;
 
 	$self->{'TITLE'}
 	}
 
-=item $obj->description( [ DESCRIPTION ] )
+=item $obj->description
 
-Sets the link description with the given argument, and returns the link
-description. If the argument is not defined (e.g. not specified),
-returns the current link description.
+Returns the link description.
 
 =cut
 
 sub description
 	{
-	my( $self, $description ) = @_;
-
-	$self->{'DESCRIPTION'} = $description if defined $description;
+	my $self = shift;
 
 	$self->{'DESCRIPTION'}
 	}
@@ -260,97 +232,6 @@ sub aliasid
 	$self->{'ALIASID'}
 	}
 
-=item $obj->shortcuturl
-
-=cut
-
-sub shortcuturl
-	{
-	my( $self, $shortcuturl ) = @_;
-
-	$self->{'SHORTCUTURL'} = $shortcuturl if defined $shortcuturl;
-
-	$self->{'SHORTCUTURL'}
-	}
-	
-=item $obj->icon
-
-=cut
-
-sub icon
-	{
-	my( $self, $icon ) = @_;
-	
-	$self->{'ICON'} = $icon if defined $icon;
-
-	$self->{'ICON'}
-	}
-
-=item $obj->schedule
-
-=cut
-
-sub schedule
-	{
-	my( $self, $schedule ) = @_;
-
-	$self->{'SCHEDULE'} = $schedule if defined $schedule;
-
-	$self->{'SCHEDULE'}
-	}
-
-=item $obj->last_ping
-
-=cut
-
-sub last_ping
-	{
-	my( $self, $last_ping ) = @_;
-
-	$self->{'LAST_PING'} = $last_ping if defined $last_ping;
-
-	$self->{'LAST_PING'}
-	}
-	
-=item $obj->ping_content_len
-
-=cut
-
-sub ping_content_len
-	{
-	my( $self, $ping_content_len ) = @_;
-
-	$self->{'PING_CONTENT_LEN'} = $ping_content_len if defined $ping_content_len;
-
-	$self->{'PING_CONTENT_LEN'}
-	}
-
-=item $obj->ping_status
-
-=cut
-
-sub ping_status
-	{
-	my( $self, $ping_status ) = @_;
-
-	$self->{'PING_STATUS'} = $ping_status if defined $ping_status;
-
-	$self->{'PING_STATUS'}
-	}
-	
-=item $obj->last_charset
-
-=cut
-
-sub last_charset
-	{
-	my( $self, $charset ) = @_;
-
-	$self->{'LAST_CHARSET'} = $charset if defined $charset;
-
-	$self->{'LAST_CHARSET'}
-	}
-	
 # =item $obj->alias_of
 #
 # Returns the target id of a link. Links with aliases are assigned an ALIAS_ID which
@@ -397,7 +278,7 @@ sub append_description
 	$self->{'DESCRIPTION'} .= $text;
 	}
 
-#  just show me what you think is in the link.  i use this for
+#  just some me what you thin is in the link.  i use this for
 #  debugging.
 #
 sub print_dump
@@ -426,72 +307,25 @@ sub as_string
 	{
 	my $self = shift;
 
-	my $link              = $self->href;
-	my $title             = $self->title;
-	my $aliasid           = $self->aliasid;
-	my $aliasof           = $self->aliasof;
-	my $add_date          = $self->add_date;
-	my $last_visit        = $self->last_visit;
-	my $last_modified     = $self->last_modified;
-	my $shortcuturl       = $self->shortcuturl;
-	my $icon              = $self->icon;
-	my $last_charset      = $self->last_charset;
-	my $schedule          = $self->schedule;
-	my $last_ping         = $self->last_ping;
-	my $ping_content_len  = $self->ping_content_len;
-	my $ping_status       = $self->ping_status;
+	my $link  = $self->href;
+	my $title = $self->title;
+
+	my $add_date      = $self->add_date;
+	my $last_visit    = $self->last_visit;
+	my $last_modified = $self->last_modified;
+	my $aliasid       = $self->aliasid;
+	my $aliasof       = $self->aliasof;
+
+	$aliasid       = defined $aliasid ? qq|ALIASID="$aliasid" |            : '';
+	$aliasof       = defined $aliasof ? qq|ALIASOF="$aliasof" |            : '';
+	$add_date      = $add_date        ? qq|ADD_DATE="$add_date" |          : qq|ADD_DATE="0" |;
+	$last_visit    = $last_visit      ? qq|LAST_VISIT="$last_visit" |      : qq|LAST_VISIT="0" |;
+	$last_modified = $last_modified   ? qq|LAST_MODIFIED="$last_modified"| : qq|LAST_MODIFIED="0"|;
+
+	my $desc = "\n\t<DD>" . $self->description if $self->description;
+	$desc ||= '';
 	
-	$aliasid       = defined $aliasid ? qq|ALIASID="$aliasid"|        : '';
-	$aliasof       = defined $aliasof ? qq|ALIASOF="$aliasof"|        : '';
-	$add_date      = $add_date        ? qq|ADD_DATE="$add_date"|      : '';
-	$last_visit    = $last_visit      ? qq|LAST_VISIT="$last_visit"|  : '';
-	$last_modified = $last_modified   ? qq|LAST_MODIFIED="$last_modified"| : '';
-
-	$shortcuturl   = $shortcuturl  ? qq|SHORTCUTURL="$shortcuturl"|   : '';
-	$icon          = $icon         ? qq|ICON="$icon"|                 : '';
-	$last_charset  = $last_charset ? qq|LAST_CHARSET="$last_charset"| : '';
-
-	$schedule         = $schedule         ? qq|SCHEDULE="$schedule"|                 : '';
-	$last_ping        = $last_ping        ? qq|LAST_PING="$last_ping"|               : '';
-	$ping_content_len = $ping_content_len ? qq|PING_CONTENT_LEN="$ping_content_len"| : '';
-	$ping_status      = $ping_status      ? qq|PING_STATUS="$ping_status"|           : '';
-
-	my $attr = join " ", grep( $_ ne '', ($aliasid, $aliasof, $add_date, $last_visit,
-		$last_modified, $schedule, $last_ping, $shortcuturl, $icon, $last_charset,
-		$ping_content_len, $ping_status) ); 
-	
-	$attr = " " . $attr if $attr;
-	
-	my $desc = '';
-	$desc  = "\n\t<DD>" . $self->description if $self->description;
-
-	#XXX: when the parser gets the Link description, it also picks up
-	#the incidental whitespace between the description and the
-	#next item, so we need to remove this before we print it.
-	#
-	#this is just a kludge though, since we should solve the
-	#actual problem as it happens.  however, since this is a
-	#stream  parser and we don't know when the description ends
-	#until the next thing starts (since there is no closing DD tag,
-	#we don't know when to strip whitespace.
-	$desc =~ s/\s+$//;
-
-	return qq|<A HREF="$link"$attr>$title</A>$desc|;
-	}
-
-=item $obj->remove
-
-Performs any clean up necessary to remove this object from the
-Bookmarks tree. Although this method does not remove Alias objects
-which point to the Link, it probably should.
-
-=cut
-
-sub remove
-	{
-	my $self = shift;
-
-	return 1;
+	return qq|<A HREF="$link" $aliasof$aliasid$add_date$last_visit$last_modified>$title</A>$desc|;
 	}
 
 "if you want to believe everything you read, so be it."
@@ -502,17 +336,25 @@ __END__
 
 =head1 TO DO
 
-	* Add methods for manipulating attributes
+	Add methods for manipulating attributes
+
+=head1 SOURCE AVAILABILITY
+
+This source is part of a SourceForge project which always has the
+latest sources in CVS, as well as all of the previous releases.
+
+	http://sourceforge.net/projects/nsbookmarks/
+
+If, for some reason, I disappear from the world, one of the other
+members of the project can shepherd this module appropriately.
 
 =head1 AUTHOR
 
-brian d foy E<lt>bdfoy@cpan.orgE<gt>
+brian d foy, C<< <bdfoy@cpan.org> >>
 
 =head1 COPYRIGHT
 
-Copyright 2002, brian d foy, E<lt>bdfoy@cpan.orgE<gt>
-
-This program is free software. You can redistribute it
+This program is free software; you can redistribute it
 and/or modify it under the same terms as Perl itself.
 
 If you send me modifications or new features, I will do

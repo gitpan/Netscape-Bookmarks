@@ -1,5 +1,6 @@
 package Netscape::Bookmarks::Separator;
-# $Id: Separator.pm,v 1.5 2002/09/23 21:33:34 comdog Exp $
+# $Revision: 1.3 $
+# $Id: Separator.pm,v 1.3 2004/09/16 01:33:21 comdog Exp $
 
 =head1 NAME
 
@@ -23,7 +24,7 @@ Netscape::Bookmarks::Separator	- manipulate, or create Netscape Bookmarks files
 
 Store a Netscape bookmark separator object.
 
-=head1 METHODS
+=head2 Methods
 
 =over 4
 
@@ -34,33 +35,24 @@ use strict;
 use subs qw();
 use vars qw($VERSION $ERROR @EXPORT @EXPORT_OK @ISA);
 
-use Netscape::Bookmarks;
-use Netscape::Bookmarks::AcceptVisitor;
-
 use Exporter;
 
 use URI::URL;
 
-($VERSION) = q$Revision: 1.5 $ =~ m/(\d+\.\d+)\s*$/;
+($VERSION) = q$Revision: 1.3 $ =~ m/(\d+\.\d+)\s*$/;
 
 @EXPORT    = qw();
 @EXPORT_OK = qw();
-@ISA       = qw(Netscape::Bookmarks::AcceptVisitor);
-
-my $singleton = undef;
+@ISA       = qw();
 
 =item Netscape::Bookmarks::Separator->new
 
 Creates a new Separator object.  This method takes no arguments.
-This object represents a Singleton object.  The module only
-makes on instance which everybody else shares.
 
 =cut
 
 sub new
 	{
-	return $singleton if defined $singleton;
-
 	my $class  = shift;
 
 	my $n = '';
@@ -68,9 +60,7 @@ sub new
 
 	bless $self, $class;
 
-	$singleton = $self;
-
-	$singleton;
+	$self;
 	}
 
 =item $obj->as_string
@@ -80,44 +70,32 @@ not have to do this as Netscape::Bookmarks::Category will take care of it.
 
 =cut
 
-sub as_string { "<HR>" }
-
-=item $obj->title
-
-Prints a string to represent a separator.  This method exists to
-round out polymorphism among the  Netscape::* classes.  The
-string does not have a trailing newline.
-
-=cut
-
-sub title
+sub as_string
 	{
-	return "-" x 50;
+	return "<HR>";
 	}
 
-=item $obj->remove
+"if you want to believe everything you read, so be it."
 
-Performs any clean up necessary to remove this object from the
-Bookmarks tree.
-
-=cut
-
-sub remove
-	{
-	return 1;
-	}
-
-"if you want to believe everything you read, so be it.";
+__END__
 
 =back
 
+=head1 SOURCE AVAILABILITY
+
+This source is part of a SourceForge project which always has the
+latest sources in CVS, as well as all of the previous releases.
+
+	http://sourceforge.net/projects/nsbookmarks/
+
+If, for some reason, I disappear from the world, one of the other
+members of the project can shepherd this module appropriately.
+
 =head1 AUTHOR
 
-brian d foy E<lt>bdfoy@cpan.orgE<gt>
+brian d foy E<lt>comdog@panix.comE<gt>
 
 =head1 COPYRIGHT
-
-Copyright 2002, brian d foy, All rights reserved.
 
 This program is free software; you can redistribute it
 and/or modify it under the same terms as Perl itself.

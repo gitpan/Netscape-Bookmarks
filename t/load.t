@@ -1,17 +1,14 @@
-# $Id: load.t,v 1.1 2002/09/23 20:40:43 comdog Exp $
+# $Id: load.t,v 1.1 2004/09/16 00:46:35 comdog Exp $
 BEGIN {
-	use File::Find::Rule;
-	@classes = map { my $x = $_;
-			$x =~ s|^blib/lib/||;
-			$x =~ s|/|::|g;
-			$x =~ s|\.pm$||;
-			$x;
-			} File::Find::Rule->file()->name( '*.pm' )->in( 'blib/lib' );
+	@classes = map { join "::", 'Netscape::Bookmarks' }
+		qw( Alias Category Link Separator );
+		
+	unshift @classes, 'Netscape::Bookmarks';
 	}
 
 use Test::More tests => scalar @classes;
 
 foreach my $class ( @classes )
 	{
-	print "bail out! $class did not compile!" unless use_ok( $class );
+	print "bail out! $class did not compile\n" unless use_ok( $class );
 	}

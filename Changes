@@ -1,35 +1,5 @@
-$Id: Changes,v 1.4 2002/09/24 01:34:09 comdog Exp $
+$Id: Changes,v 1.2 2001/12/10 06:17:29 comdog Exp $
 Revision history for Perl extension Netscape::Bookmarks.
-
-2.2_01 Mon Sep 23 20:33:04 CDT 2002
-	---> still a beta, but not as much as before <---
-	- added Mozilla support
-
-2.1_03 Mon Sep 23 16:31:42 CDT 2002
-	---> still a beta release <---
-	- converted tests to Test::Builder
-	- check a few values for definedness before using
-	them ( thanks to Shayne )
-    - start adding Mozilla support
-
-2.1_02 Sun May 26 20:21:54 CDT 2002
-	---> still a beta release <---
-	- added a Visitor mechanism, and an introduce() function to 
-	Category.pm.
-
-2.0_01 Sat Jan  5 06:25:20 EST 2002
-	---> this is a beta release <---
-	- lots of code changes to make things more clear for those that
-	like to read the source ;)
-	- fixed a trailing whitespace error for link description output
-	- added a recurse() function that walks the tree and calls your
-	provided subroutine
-	- added a sort_elements() method to Category.  it has a default
-	sort or you can provide your own.  make sure you read the docs
-	on this one though!
-	- improved some assessor methods to also set values if you provide
-	an argument
-	- added some example scripts for various tasks
 
 1.5 Mon Dec 10 02:15:01 EST 2001
 	- fixed numerous documentation errors
