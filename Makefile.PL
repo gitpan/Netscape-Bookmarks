@@ -1,14 +1,28 @@
 use ExtUtils::MakeMaker;
 # See lib/ExtUtils/MakeMaker.pm for details of how to influence
 # the contents of the Makefile that is written.
-# $Revision: 1.4 $
-# $Id: Makefile.PL,v 1.4 2001/04/05 05:48:15 brian Exp $
+# $Revision: 1.5 $
+# $Id: Makefile.PL,v 1.5 2001/05/13 22:22:29 brian Exp $
+
+$dirs = [ qw(Alias Category Link Separator) ];
 
 WriteMakefile(
     'NAME'	=> 'Netscape::Bookmarks',
     'VERSION_FROM' => 'Bookmarks.pm', # finds $VERSION
     'PREREQ_PM'    => { 	
-	'HTML::Parser' => undef,
-	'HTML::Entities' => undef,
-	 }
+		'HTML::Parser' => undef,
+		'HTML::Entities' => undef,
+		'URI::URL' => undef,
+	 },
+
+	'DIR'       => [ qw(Alias Category Link Separator) ],
+    'PMLIBDIRS'     => [ qw(Alias Category Link Separator) ],
+
+    'dist'          => {
+                       'COMPRESS'        => 'gzip -9f',
+                       'SUFFIX'          => 'gz',
+                        },
+
+	MYEXTLIB		=> undef,
+
 );
