@@ -23,7 +23,7 @@ use Netscape::Bookmarks::Category;
 use Netscape::Bookmarks::Link;
 use Netscape::Bookmarks::Separator;
 
-$VERSION = 0.91;
+$VERSION = 0.92;
 @ISA=qw(HTML::Parser);
 
 $ID = 0;
@@ -277,9 +277,8 @@ their appropriate modules.
 
 =head1 AUTHOR
 
-brian d foy <brian@smithrenaud.com>
+brian d foy <comdog@panix.com>
 
-Copyright (c) 1999 Smith Renaud, Inc. All rights reserved.
 This program is free software; you can redistribute it
 and/or modify it under the same terms as Perl itself.
 

@@ -67,9 +67,8 @@ not have to do this as Netscape::Bookmarks::Category will take care of it.
 
 =head1 AUTHOR
 
-brian d foy <brian@smithrenaud.com>
+brian d foy <comdog@panix.com>
 
-Copyright (c) 1999 Smith Renaud, Inc. All rights reserved.
 This program is free software; you can redistribute it
 and/or modify it under the same terms as Perl itself.
 

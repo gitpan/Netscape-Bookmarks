@@ -282,9 +282,8 @@ Returns a Netscape compatible bookmarks file based on the Bookmarks object.
 	
 =head1 AUTHOR
 
-brian d foy <brian@smithrenaud.com>
+brian d foy <comdog@panix.com>
 
-Copyright (c) 1999 Smith Renaud, Inc. All rights reserved.
 This program is free software; you can redistribute it
 and/or modify it under the same terms as Perl itself.
 
