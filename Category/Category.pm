@@ -1,6 +1,6 @@
 package Netscape::Bookmarks::Category;
-# $Revision: 1.4 $
-# $Id: Category.pm,v 1.4 2001/05/13 22:19:28 brian Exp $
+# $Revision: 1.1.1.1 $
+# $Id: Category.pm,v 1.1.1.1 2001/08/08 18:03:32 comdog Exp $
 
 =head1 NAME
 
@@ -67,7 +67,7 @@ use constant TAB             => '    ';
 use constant FOLDED_TRUE     => 1;
 use constant FOLDED_FALSE    => 0;
 	
-($VERSION) = q$Revision: 1.4 $ =~ m/(\d+\.\d+)\d*$/;
+($VERSION) = q$Revision: 1.1.1.1 $ =~ m/(\d+\.\d+)\d*$/;
 %IDS     = ();
 $LAST_ID = -1;
 

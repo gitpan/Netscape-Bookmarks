@@ -1,8 +1,8 @@
 use ExtUtils::MakeMaker;
 # See lib/ExtUtils/MakeMaker.pm for details of how to influence
 # the contents of the Makefile that is written.
-# $Revision: 1.5 $
-# $Id: Makefile.PL,v 1.5 2001/05/13 22:22:29 brian Exp $
+# $Revision: 1.1.1.1 $
+# $Id: Makefile.PL,v 1.1.1.1 2001/08/08 18:03:32 comdog Exp $
 
 $dirs = [ qw(Alias Category Link Separator) ];
 
