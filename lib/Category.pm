@@ -1,6 +1,6 @@
 package Netscape::Bookmarks::Category;
 # $Revision: 1.1.1.1 $
-# $Id: Category.pm,v 1.1.1.1 2001/08/08 18:03:32 comdog Exp $
+# $Id: Category.pm,v 1.1.1.1 2002/01/08 16:43:24 comdog Exp $
 
 =head1 NAME
 
@@ -56,6 +56,8 @@ use strict;
 use subs qw();
 use vars qw($VERSION $ERROR @EXPORT @EXPORT_OK @ISA $LAST_ID %IDS);
 
+use Netscape::Bookmarks;
+
 use Exporter;
 
 use URI::URL;
@@ -104,7 +106,7 @@ sub new
 		$IDS{$LAST_ID}++;
 		}
 
-	if( $param->{'add_date'} =~ /\D/ or not $param->{'add_date'} =~ /^\d+$/ )
+	if( defined $param->{'add_date'} and $param->{'add_date'} =~ /\D/  )
 		{
 		$param->{'add_date'} = 0;
 		}
@@ -128,17 +130,49 @@ Link, Category, or Separator object.  Returns TRUE or FALSE.
 
 sub add
 	{
-	my $self = shift;
+	my $self   = shift;
 	my $thingy = shift;
 	
 	return unless 
-		ref $$thingy eq 'Netscape::Bookmarks::Link' or 
-		ref $$thingy eq 'Netscape::Bookmarks::Category' or
-		ref $$thingy eq 'Netscape::Bookmarks::Separator' or
-		ref $$thingy eq 'Netscape::Bookmarks::Alias';
+		ref $thingy eq 'Netscape::Bookmarks::Link' or 
+		ref $thingy eq 'Netscape::Bookmarks::Category' or
+		ref $thingy eq 'Netscape::Bookmarks::Separator' or
+		ref $thingy eq 'Netscape::Bookmarks::Alias';
 		
-	push @{ $self->{'thingys'} }, $$thingy;
+	push @{ $self->{'thingys'} }, $thingy;
 	}
+
+=item $category-E<gt>remove_element( $object )
+
+Removes the given object from the Category by calling the object's
+remove() method.
+
+Returns the number of objects removed from the Category.
+
+=cut
+
+sub remove_element
+	{
+	my $self   = shift;
+	my $thingy = shift;
+	
+	my $old_count = $self->count;
+	 
+	$self->{'thingys'} = 
+		[ grep { $_ ne $thingy and $_->remove } $self->elements ];
+		
+	return $old_count - $self->count;
+	}
+		
+=item $category-E<gt>remove()
+
+Performs any clean up necessary to remove this object from the
+Bookmarks tree. Although this method does not recursively remove
+objects which it contains, it probably should.
+
+=cut
+
+sub remove { 1; }
 
 # append_title is used by the parser routines to add to a 
 # title as the HTML stream is parsed.  the title may fall
@@ -178,9 +212,9 @@ sub add_desc
 	$self->{'description'} = $text;
 	}
 
-=item $category-E<gt>title( $object )
+=item $category-E<gt>title()
 
-Adds a title to the category.
+Returns title to the category.
 
 =cut
 
@@ -191,9 +225,9 @@ sub title
 	$self->{'title'};
 	}
 
-=item $category-E<gt>title( $object )
+=item $category-E<gt>id()
 
-Returns the title of the category.
+Returns the ID of the category. This is an arbitrary, unique number.
 
 =cut
 
@@ -202,6 +236,19 @@ sub id
 	my $self = shift;
 	
 	$self->{'id'};
+	}
+
+=item $category-E<gt>description
+
+Returns the description of the category
+
+=cut
+
+sub description
+	{
+	my $self = shift;
+
+	$self->{description};
 	}
 
 =item $category-E<gt>folded( $object )
@@ -218,7 +265,7 @@ sub folded
 	return $self->{'folded'} ? 1 : 0;
 	}
 
-=item $category-E<gt>add_date( $object )
+=item $category-E<gt>add_date()
 
 Returns the ADD_DATE attribute of the category.
 
@@ -231,9 +278,11 @@ sub add_date
 	return $self->{'add_date'};
 	}
 	
-=item $category-E<gt>elements( $object )
+=item $category-E<gt>elements()
 
-Returns an array reference to the elements in the category.
+In scalar context returns an array reference to the elements in 
+the category.  In list context returns a list of the elements in
+the category.
 
 =cut
 
@@ -241,10 +290,19 @@ sub elements
 	{
 	my $self = shift;
 	
-	return \@{ $self->{'thingys'} };
+	if( wantarray ) { @{ $self->{'thingys'} } }
+	else            {    $self->{'thingys'}   }
 	}
+
+=item $category-E<gt>count()
+
+Returns a count of the number of objects in the Category.
+
+=cut
+
+sub count { scalar @{ $_[0]->{'thingys'} } }
 	
-=item $category-E<gt>categories( $object )
+=item $category-E<gt>categories()
 
 Returns a list of the Category objects in the category.
 
@@ -254,12 +312,13 @@ sub categories
 	{
 	my $self = shift;
 	
-	my @list = grep ref $_ eq 'Netscape::Bookmarks::Category', @{$self->elements};
+	my @list = grep ref $_ eq 'Netscape::Bookmarks::Category', 
+		$self->elements;
 	
 	return @list;
 	}
 
-=item $category-E<gt>links( $object )
+=item $category-E<gt>links()
 
 Returns a list of the Link objects in the category.
 
@@ -269,12 +328,13 @@ sub links
 	{
 	my $self = shift;
 	
-	my @list = grep ref $_ eq 'Netscape::Bookmarks::Link', @{$self->elements};
+	my @list = grep ref $_ eq 'Netscape::Bookmarks::Link',
+		 $self->elements;
 	
 	return @list;
 	}
 
-=item $category-E<gt>as_headline( $object )
+=item $category-E<gt>as_headline()
 
 Returns an HTML string representation of the category, but not
 the elements of the category.
@@ -285,18 +345,112 @@ sub as_headline
 	{
 	my $self = shift;
 	
-	my $folded = $self->folded ? "FOLDED" : "";
+	my $folded   = $self->folded ? "FOLDED" : "";
+	my $title    = $self->title;
+	my $desc     = $self->description;
 	my $add_date = $self->add_date;
-	my $title = $self->title;
-	
+		
+	$desc = $desc ne '' ? "\n<DD>$desc" : '';
+
 	$add_date = $add_date ? qq|ADD_DATE="$add_date"| : '';
 	
 	my $sp = ($folded and $add_date) ? ' ' : '';
 	
-	return qq|<H3 $folded$sp$add_date>$title</H3>|
+	return qq|<H3 $folded$sp$add_date>$title</H3>$desc|
 	}
 
-=item $category-E<gt>as_string( $object )
+=head2 $category-E<gt>recurse( CODE, [ LEVEL ] )
+
+This method performs a depth-first traversal of the Bookmarks
+tree and executes the CODE reference at each node.  
+
+The CODE reference receives two arguments - the object on which
+it should operate and its level in the tree.
+
+=cut
+
+sub recurse
+	{
+	my $self  = shift;
+	my $sub   = shift;
+	my $level = shift || 0;
+	
+	unless( ref $sub eq 'CODE' )
+		{
+		warn "Argument to recurse is not a code reference";
+		return;
+		}
+
+	$sub->( $self, $level );
+		
+	++$level;
+	foreach my $element ( $self->elements )
+		{
+		if( $element->isa( __PACKAGE__ ) )
+			{
+			$element->recurse( $sub, $level );
+			}
+		else
+			{
+			$sub->( $element, $level );
+			}
+		}
+	--$level;
+
+	}	
+	
+=item $category-E<gt>sort_elements( [ CODE ] )
+
+Sorts the elements in the category using the provided CODE
+reference.  If you do not specify a CODE reference, the
+elements are sorted by title (with the side effect of 
+removing Separators from the Category).
+
+This function does not recurse, although you can use
+the recurse() method to do that.
+
+Since the built-in sort() uses the package variables
+C<$a> and C<$b>, your sort subroutine has to make sure
+that it is accessing the right C<$a> and C<$b>, which 
+are the ones in the package C<Netscape::Bookmarks::Category>.
+You can start your CODE reference with a package
+declaration to ensure the right thing happens:
+
+	my $sub = sub {
+		package Netscape::Bookmarks::Category;
+		
+		$b->title cmp $a->title;
+		};
+		
+	$category->sort_elements( $sub );
+	
+If you know a better way to do this, please let me know. :)
+
+=cut
+
+sub sort_elements
+	{
+	my $self = shift;
+	my $sub  = shift;
+		
+	if( defined $sub and not ref $sub eq 'CODE' )
+		{
+		warn "Second argument to sort_elements is not a CODE reference.";
+		return;
+		}
+	elsif( not defined $sub )
+		{
+		$sub = sub { $a->title cmp $b->title };
+		}
+
+	local *my_sorter = $sub;
+		
+	$self->{'thingys'} = [ sort my_sorter
+		grep { not $_->isa( 'Netscape::Bookmarks::Separator' ) }
+			@{ $self->{'thingys'} } ];
+	}
+	
+=item $category-E<gt>as_string()
 
 Returns an HTML string representation of the category as the
 top level category, along with all of the elements of the 
@@ -306,9 +460,10 @@ category and the Categories that it contains, recursively.
 
 sub as_string
 	{
-	my $self = shift;
-	
+	my $self   = shift;
+		
 	my $title = $self->title;
+	my $desc  = $self->description;
 	
 	my $str = <<"HTML";
 <!DOCTYPE NETSCAPE-Bookmark-file-1>
@@ -316,18 +471,21 @@ sub as_string
 It will be read and overwritten.
 Do Not Edit! -->
 <TITLE>$title</TITLE>
-<H1>$title</H1>\x0A
+<H1>$title</H1>
+
 HTML
+
+	$str .= "<DD>" . $self->description;
 	
 	$str .= START_LIST . "\n";
 	
-	foreach my $ref ( @{$self->elements} )
+	foreach my $element ( $self->elements )
 		{
-		$str .= $self->_as_string(\$ref, 1);
+		$str .= $self->_as_string( $element, 1 );
 		}
 
 	$str .= END_LIST . "\n";
-	
+
 	return $str;
 	}
 
@@ -335,42 +493,34 @@ HTML
 # do.
 sub _as_string
 	{
-	my $self  = shift;
-	my $obj   = shift;
-	my $level = shift;
-		
+	my $self   = shift;
+	my $obj    = shift;
+	my $level  = shift;
+	
 	my $str; 
-	if( ref $$obj eq 'Netscape::Bookmarks::Category' )
+	if( ref $obj eq 'Netscape::Bookmarks::Category' )
 		{
+		$str .= TAB x ($level) . START_LIST_ITEM . $obj->as_headline;
+		$str .= TAB x ($level-1) . START_LIST . "\n";
+		
 		++$level;
-		$str .= TAB x ($level - 1) . START_LIST_ITEM . ($$obj)->as_headline . "\n";
-		$str .= TAB x ($level - 1) . START_LIST . "\n";
-		
-		foreach my $ref ( @{($$obj)->elements} )
+		foreach my $ref ( $obj->elements )
 			{
-			$str .= $self->_as_string(\$ref, $level);
+			$str .= $self->_as_string( $ref, $level );
 			}
-		
-		$str .= TAB x ($level - 1) . END_LIST . "\n";
 		--$level;
+	
+		$str .= TAB x ($level) . END_LIST . "\n";
 		}
-	elsif( ref $$obj eq 'Netscape::Bookmarks::Link' )
+	elsif( ref $obj eq 'Netscape::Bookmarks::Link' or
+		   ref $obj eq 'Netscape::Bookmarks::Alias' )
 		{
-		my $title = ($$obj)->title;
-		my $url   = ($$obj)->href;
-		$str .= TAB x ($level) . START_LIST_ITEM . ($$obj)->as_string . "\n"
+		$str .= TAB x ($level) . START_LIST_ITEM 
+			. $obj->as_string . "\n"
 		}
-	elsif( ref $$obj eq 'Netscape::Bookmarks::Alias' )
+	elsif( ref $obj eq 'Netscape::Bookmarks::Separator' )
 		{
-		my $title = ($$obj)->target->title;
-		my $url   = ($$obj)->target->href;
-		my $s = ($$obj)->target->as_string;
-		$s =~ s/ALIASID/ALIASOF/;
-		$str .= TAB x ($level) . START_LIST_ITEM . $s . "\n"
-		}
-	elsif( ref $$obj eq 'Netscape::Bookmarks::Separator' )
-		{
-		$str .= TAB x ($level) . ($$obj)->as_string . "\n"
+		$str .= TAB x ($level) . $obj->as_string . "\n"
 		}
 		
 	return $str;
@@ -385,7 +535,7 @@ __END__
 
 =head1 AUTHOR
 
-brian d foy E<lt>comdog@panix.comE<gt>
+brian d foy E<lt>bdfoy@cpan.orgE<gt>
 
 =head1 COPYRIGHT
 
@@ -393,7 +543,9 @@ This program is free software; you can redistribute it
 and/or modify it under the same terms as Perl itself.
 
 If you send me modifications or new features, I will do
-my best to incorporate them into future versions.
+my best to incorporate them into future versions. You can
+interact with the Sourceforge porject for this module at
+http://sourceforge.net/projects/nsbookmarks/.
 
 =head1 SEE ALSO
 

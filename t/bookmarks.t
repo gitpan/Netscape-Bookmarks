@@ -21,13 +21,13 @@ print "ok 1\n";
 eval {
 my $netscape = Netscape::Bookmarks->new( "bookmark_files/Bookmarks.html" );
 
-open FILE, "> bookmark_files/Bookmarks_tmp.html" or die "Could not open tmp file: $!";
+open FILE, "> bookmark_files/Bookmarks_tmp.html" 
+	or die "Could not open tmp file: $!";
 print FILE $netscape->as_string;
 close FILE;
 };
-
 print STDERR $@ if $@;
 
 print $@ ? 'not ' : '', 'ok 2', "\n";
 
-END { unlink "bookmark_files/Bookmarks_tmp.html" }
+# END { unlink "bookmark_files/Bookmarks_tmp.html" }

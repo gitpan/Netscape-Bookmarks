@@ -1,6 +1,6 @@
 package Netscape::Bookmarks::Link;
 # $Revision: 1.1.1.1 $
-# $Id: Link.pm,v 1.1.1.1 2001/08/08 18:03:32 comdog Exp $
+# $Id: Link.pm,v 1.1.1.1 2002/01/08 16:43:25 comdog Exp $
 
 =head1 NAME
 
@@ -66,6 +66,8 @@ use strict;
 use subs qw();
 use vars qw($DEBUG $VERSION $ERROR @EXPORT @EXPORT_OK @ISA);
 
+use Netscape::Bookmarks;
+
 use Exporter;
 
 use URI::URL;
@@ -109,7 +111,7 @@ sub new
 	
 	foreach my $k ( qw(ADD_DATE LAST_MODIFIED LAST_VISIT ALIASID ALIASOF) )
 		{
-		if( $param->{$k} =~ /\D/ )
+		if( defined $param->{$k} and $param->{$k} =~ /\D/ )
 			{
 			$ERROR = "[$$param{$k}] is not a valid $k";
 			return -2;	
@@ -142,7 +144,7 @@ sub href
 	{
 	my $self = shift;
 	
-	($self->{'HREF'})->as_string
+	$self->{'HREF'}->as_string
 	}
 
 =head2 $obj->add_date
@@ -186,28 +188,36 @@ sub last_visit
 	$self->{'LAST_VISIT'}
 	}
 	
-=head2 $obj->title
+=head2 $obj->title( [ TITLE ] )
 
-Returns the link title.
+Sets the link title with the given argument, and returns the link title.
+If the argument is not defined (e.g. not specified), returns the current
+link title.
 
 =cut
 
 sub title
 	{
-	my $self = shift;
+	my( $self, $title ) = @_;
+
+	$self->{'TITLE'} = $title if defined $title;
 	
 	$self->{'TITLE'}
 	}
 
-=head2 $obj->description
+=head2 $obj->description( [ DESCRIPTION ] )
 
-Returns the link description.
+Sets the link description with the given argument, and returns the link
+description. If the argument is not defined (e.g. not specified),
+returns the current link description.
 
 =cut
 
 sub description
 	{
-	my $self = shift;
+	my( $self, $description ) = @_;
+	
+	$self->{'DESCRIPTION'} = $description if defined $description;
 	
 	$self->{'DESCRIPTION'}
 	}
@@ -306,25 +316,56 @@ sub as_string
 	{
 	my $self = shift;
 	
-	my $link  = $self->href;
-	my $title = $self->title;
-	
+	my $link          = $self->href;
+	my $title         = $self->title;
+	my $aliasid       = $self->aliasid;
+	my $aliasof       = $self->aliasof;
 	my $add_date      = $self->add_date;
 	my $last_visit    = $self->last_visit;
 	my $last_modified = $self->last_modified;
-	my $aliasid       = $self->aliasid;
-	my $aliasof       = $self->aliasof;
 	
-	$aliasid = defined $aliasid ? qq|ALIASID="$aliasid" | : '';
-	$aliasof = defined $aliasof ? qq|ALIASOF="$aliasof" | : '';
-	$add_date = $add_date ? qq|ADD_DATE="$add_date" | : qq|ADD_DATE="0" |;
-	$last_visit = $last_visit ? qq|LAST_VISIT="$last_visit" | : qq|LAST_VISIT="0" |;
-	$last_modified = $last_modified ? qq|LAST_MODIFIED="$last_modified"| : qq|LAST_MODIFIED="0"|;
+	$aliasid       = defined $aliasid ? qq|ALIASID="$aliasid" | : '';
+	$aliasof       = defined $aliasof ? qq|ALIASOF="$aliasof" | : '';
+	$add_date      = $add_date        ? qq|ADD_DATE="$add_date" | 
+		: qq|ADD_DATE="0" |;
+	$last_visit    = $last_visit      ? 
+		qq|LAST_VISIT="$last_visit" | : qq|LAST_VISIT="0" |;
+	$last_modified = $last_modified   ? 
+		qq|LAST_MODIFIED="$last_modified"| : qq|LAST_MODIFIED="0"|;
 
-	my $desc = "\n\t<DD>" . $self->description if $self->description;
-	return qq|<A HREF="$link" $aliasof$aliasid$add_date$last_visit$last_modified>$title</A>$desc|;
+	my $desc = '';
+	$desc  = "\n\t<DD>" . $self->description if $self->description;
+	
+	#XXX: when the parser gets the Link description, it also picks up
+	#the incidental whitespace between the description and the
+	#next item, so we need to remove this before we print it.
+	#
+	#this is just a kludge though, since we should solve the
+	#actual problem as it happens.  however, since this is a
+	#stream  parser and we don't know when the description ends
+	#until the next thing starts (since there is no closing DD tag,
+	#we don't know when to strip whitespace.
+	$desc =~ s/\s+$//;
+	
+	return qq|<A HREF="$link" $aliasof$aliasid$add_date$last_visit| .
+		qq|$last_modified>$title</A>$desc|;
 	}
 
+=head2 $obj->remove
+
+Performs any clean up necessary to remove this object from the
+Bookmarks tree. Although this method does not remove Alias objects
+which point to the Link, it probably should.  
+
+=cut
+
+sub remove
+	{
+	my $self = shift;
+	
+	return 1;
+	}
+	
 "if you want to believe everything you read, so be it."
 
 __END__
@@ -333,15 +374,15 @@ __END__
 
 =head1 TO DO
 
-	Add methods for manipulating attributes
+	* Add methods for manipulating attributes
 
 =head1 AUTHOR
 
-brian d foy E<lt>comdog@panix.comE<gt>
+brian d foy E<lt>bdfoy@cpan.orgE<gt>
 
 =head1 COPYRIGHT
 
-This program is free software; you can redistribute it
+This program is free software. You can redistribute it
 and/or modify it under the same terms as Perl itself.
 
 If you send me modifications or new features, I will do

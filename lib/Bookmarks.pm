@@ -1,5 +1,5 @@
 package Netscape::Bookmarks;
-# $Id: Bookmarks.pm,v 1.4 2001/09/14 00:29:45 comdog Exp $
+# $Id: Bookmarks.pm,v 1.2 2002/04/04 20:18:29 comdog Exp $
 
 =head1 NAME
 
@@ -52,12 +52,13 @@ contain any of the components listed above.  The top level
 (i.e. root) category is treated specially and defines the
 title of the bookmarks file.
 
-C<HTML::Parser> is used behind the scenes to build the data
-structure (a simple list of lists (of lists ...)). 
-C<Netscape::Bookmarks::Category>, C<Netscape::Bookmarks::Link>, C<Netscape::Bookmarks::Alias>, or
-C<Netscape::Bookmarks::Separator> objects can be stored in a C<Netscape::Bookmarks::Category> object.  C<Netscape::Bookmarks::Alias> objects are treated as
-references to C<Netscape::Bookmarks::Link> objects, so changes to one affect
-the other.
+C<HTML::Parser> is used behind the scenes to build the data structure (a
+simple list of lists (of lists ...)). C<Netscape::Bookmarks::Category>,
+C<Netscape::Bookmarks::Link>, C<Netscape::Bookmarks::Alias>, or
+C<Netscape::Bookmarks::Separator> objects can be stored in a
+C<Netscape::Bookmarks::Category> object.  C<Netscape::Bookmarks::Alias>
+objects are treated as references to C<Netscape::Bookmarks::Link>
+objects, so changes to one affect the other.
 
 Methods for manipulating this object are in the
 C<Netscape::Bookmarks::Category> module.  Methods for dealing with the
@@ -93,10 +94,15 @@ use Netscape::Bookmarks::Category;
 use Netscape::Bookmarks::Link;
 use Netscape::Bookmarks::Separator;
 
-($VERSION) = q$Revision: 1.4 $ =~ m/(\d+\.\d+)\s*$/;
+($VERSION) = sprintf "%d.%02d", q$Revision: 1.2 $ =~ m/(\d+) \. (\d+)\s*$/;
+$VERSION = "2.0_01"; #this is a beta release
+
 @ISA=qw(HTML::Parser);
 
 $ID = 0;
+$DEBUG = $ENV{NS_DEBUG} || 0;
+
+sub XML { 'XML' };
 
 =item new( [filename] )
 
@@ -119,29 +125,29 @@ sub new
 	
 	unless( $file )
 		{
-		my $cat = new Netscape::Bookmarks::Category;
+		my $cat = Netscape::Bookmarks::Category->new();
 		return $cat;
 		}
 		
-	return unless (-e $file or ref $file);
+	return unless ( -e $file or ref $file );
 	
-	my $self = new HTML::Parser;
+	my $self = HTML::Parser->new();
 	
 	bless $self, $class;
 	
-	$self->parse_file($file);
+	$self->parse_file( $file );
 	
 	return $netscape;
 	}
 
 sub parse_string
 	{
-	my $ref = shift;
+	my $data_ref = shift;
 	
-	my $self = new HTML::Parser;
-	bless $self, "Netscape::Bookmarks";
+	my $self = HTML::Parser->new();
+	bless $self, __PACKAGE__;
 	
-	my $length = length $$ref;
+	my $length = length $$data_ref;
 	my $pos    = 0;
 	
 	while( $pos < $length )
@@ -149,13 +155,13 @@ sub parse_string
 		#512 bytes seems to be the magic number
 		#to make this work efficiently. don't know
 		#why really - its an HTML::Parser thing
-		$self->parse( substr( $$ref, $pos, 512 ) );
+		$self->parse( substr( $$data_ref, $pos, 512 ) );
 		$pos += 512;
 		}
 		
 	$self->eof;
 			
-	return $netscape;
+	return $netscape; # a global variable
 	}
 	
 sub start
@@ -176,9 +182,8 @@ sub start
     	}
     elsif( $tag eq 'hr' )
     	{
-    	my $item = new Netscape::Bookmarks::Separator;
-    	print "Found Separator: $item\n" if $DEBUG;
-    	${$category_stack[-1]}->add(\$item);
+    	my $item = Netscape::Bookmarks::Separator->new();
+    	$category_stack[-1]->add( $item );
     	}
     	
     $flag = $tag
@@ -190,57 +195,79 @@ sub text
 	
 	if($text_flag)
 		{
-		if( $flag eq 'h1' or $flag eq 'h3' )
+		if( not defined $flag )
 			{
-			${$category_stack[-1]}->append_title($text);
+			# sometimes $flag is not set (haven't figured out when that
+			# is), so without this no-op, you get a perl5.6.1 warning
+			# about "uninitialized value in string eq"
+			1;
+			}
+		elsif( $flag eq 'h1' or $flag eq 'h3' )
+			{
+			$category_stack[-1]->append_title( $text );
 			}
 		elsif( $flag eq 'a' and not exists $link_data{'aliasof'} )
 			{
-			${$current_link}->append_title($text);
+			$current_link->append_title( $text );
 			}
 		elsif( $flag eq 'dd' )
 			{
-			${$category_stack[-1]}->append_description($text);
+            if( $state eq 'category' )
+                {
+                $category_stack[-1]->append_description( $text );
+                }
+            elsif( $state eq 'anchor' )
+                {
+                $current_link->append_description( $text );
+                }
 			}
 
 		}
 	else
 		{
-		if( $flag eq 'h1' )
+		if( not defined $flag )
 			{
-			$netscape = new Netscape::Bookmarks::Category
+			# sometimes $flag is not set (haven't figured out when that
+			# is), so without this no-op, you get a perl5.6.1 warning
+			# about "uninitialized value in string eq"
+			1;
+			}
+		elsif( $flag eq 'h1' )
+			{
+			$netscape = Netscape::Bookmarks::Category->new(
 				{
 				title    => $text,
 				folded   => 0,
 				add_date => $category_data{'add_date'},
 				id       => $ID++,
-				};
+				} );
 						
-			push @category_stack, \$netscape;
+			push @category_stack, $netscape;
 			}
 		elsif( $flag eq 'h3' )
 			{
-			my $cat = new Netscape::Bookmarks::Category
+			my $cat = Netscape::Bookmarks::Category->new(
 				{
 				title    => $text,
 				folded   => exists $category_data{'folded'},
 				add_date => $category_data{'add_date'},
 				id       => $ID++,
-				};
+				});
 			
-			${$category_stack[-1]}->add(\$cat);
-			push @category_stack, \$cat;	
+			$category_stack[-1]->add( $cat );
+			push @category_stack, $cat;	
 			}
 		elsif( $flag eq 'a' and not exists $link_data{'aliasof'} )
 			{    	
-			my $item = new Netscape::Bookmarks::Link {
+			my $item = Netscape::Bookmarks::Link->new( {
 	    		HREF			=> $link_data{'href'},
 	    		ADD_DATE 		=> $link_data{'add_date'},
 	    		LAST_MODIFIED 	=> $link_data{'last_modified'},
 	    		LAST_VISIT    	=> $link_data{'last_visit'},
 	    		ALIASID         => $link_data{'aliasid'},
 	    		TITLE           => $text,
-	    		};
+	    		});
+	    		
 	    	unless( ref $item )
 	    		{
 	    		print "ERROR: $Netscape::Bookmarks::Link::ERROR\n" if $DEBUG;
@@ -250,36 +277,32 @@ sub text
 			if( defined $link_data{'aliasid'} )
 				{
 				&Netscape::Bookmarks::Alias::add_target(
-					\$item, $link_data{'aliasid'})
+					$item, $link_data{'aliasid'} )
 				}
-				
-			print "Link title is ", $item->title, "\n" if $DEBUG;
-			
-			${$category_stack[-1]}->add(\$item);
-			$current_link = \$item;
+							
+			$category_stack[-1]->add( $item );
+			$current_link = $item;
 			}
 		elsif( $flag eq 'a' and defined $link_data{'aliasof'} )
 			{    	
-			my $item = new Netscape::Bookmarks::Alias $link_data{'aliasof'};
-			print "Bookmarks[", __LINE__, "]: [$item]\n" if $DEBUG;
+			my $item = Netscape::Bookmarks::Alias->new( $link_data{'aliasof'} );
 	    	unless( ref $item )
 	    		{
-	    		print "ERROR: $Netscape::Bookmarks::Alias::ERROR\n" if $DEBUG;
 	    		return;
 	    		}
 				
-			${$category_stack[-1]}->add(\$item);
-			$current_link = \$item;
+			$category_stack[-1]->add( $item );
+			$current_link = $item;
 			}
 		elsif( $flag eq 'dd' )
 			{
 			if( $state eq 'category' )
 				{
-				${$category_stack[-1]}->add_desc($text);
+				$category_stack[-1]->add_desc( $text );
 				}
 			elsif( $state eq 'anchor' )
-				{
-	     		${$$current_link}{'DESCRIPTION'} = $text;
+				{                
+	     		$current_link->description( $text );
 				}
 			}
 		}
@@ -290,7 +313,7 @@ sub text
 sub end
     {
     my($self, $tag, $attr) = @_;
-    
+        
     $text_flag = 0;
     pop @category_stack   if $tag eq 'dl';
 	# what does the next line do and why?
@@ -315,7 +338,9 @@ This program is free software; you can redistribute it
 and/or modify it under the same terms as Perl itself.
 
 If you send me modifications or new features, I will do
-my best to incorporate them into future versions.
+my best to incorporate them into future versions. You
+can interact with the SourceForge project at
+http://sourceforge.net/projects/nsbookmarks/.
 
 =head1 SEE ALSO
 

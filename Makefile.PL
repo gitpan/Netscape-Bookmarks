@@ -2,21 +2,25 @@ use ExtUtils::MakeMaker;
 # See lib/ExtUtils/MakeMaker.pm for details of how to influence
 # the contents of the Makefile that is written.
 # $Revision: 1.1.1.1 $
-# $Id: Makefile.PL,v 1.1.1.1 2001/08/08 18:03:32 comdog Exp $
-
-$dirs = [ qw(Alias Category Link Separator) ];
+# $Id: Makefile.PL,v 1.1.1.1 2002/01/08 16:43:24 comdog Exp $
 
 WriteMakefile(
-    'NAME'	=> 'Netscape::Bookmarks',
-    'VERSION_FROM' => 'Bookmarks.pm', # finds $VERSION
+    'NAME'	  => 'Netscape::Bookmarks',
+    'VERSION' => '1.5', # finds $VERSION
+    
+    'PM'     => {
+    	'lib/Bookmarks.pm' => '$(INST_LIBDIR)/Bookmarks.pm',
+    	'lib/Category.pm'  => '$(INST_LIBDIR)/Bookmarks/Category.pm',
+    	'lib/Alias.pm'     => '$(INST_LIBDIR)/Bookmarks/Alias.pm',
+    	'lib/Separator.pm' => '$(INST_LIBDIR)/Bookmarks/Separator.pm',
+    	'lib/Link.pm'      => '$(INST_LIBDIR)/Bookmarks/Link.pm',
+    	},
+    	
     'PREREQ_PM'    => { 	
-		'HTML::Parser' => undef,
+		'HTML::Parser'   => undef,
 		'HTML::Entities' => undef,
-		'URI::URL' => undef,
+		'URI::URL'       => undef,
 	 },
-
-	'DIR'       => [ qw(Alias Category Link Separator) ],
-    'PMLIBDIRS'     => [ qw(Alias Category Link Separator) ],
 
     'dist'          => {
                        'COMPRESS'        => 'gzip -9f',

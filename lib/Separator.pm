@@ -1,6 +1,6 @@
 package Netscape::Bookmarks::Separator;
 # $Revision: 1.1.1.1 $
-# $Id: Separator.pm,v 1.1.1.1 2001/08/08 18:03:32 comdog Exp $
+# $Id: Separator.pm,v 1.1.1.1 2002/01/08 16:43:25 comdog Exp $
 
 =head1 NAME
 
@@ -34,6 +34,8 @@ use strict;
 
 use subs qw();
 use vars qw($VERSION $ERROR @EXPORT @EXPORT_OK @ISA);
+
+use Netscape::Bookmarks;
 
 use Exporter;
 
@@ -70,12 +72,34 @@ not have to do this as Netscape::Bookmarks::Category will take care of it.
 
 =cut
 
-sub as_string
+sub as_string { "<HR>" }
+
+=head2 $obj->title
+
+Prints a string to represent a separator.  This method exists to
+round out polymorphism among the  Netscape::* classes.  The
+string does not have a trailing newline.
+
+=cut
+
+sub title
 	{
-	return "<HR>";
+	return "-" x 50;
 	}
 
-"if you want to believe everything you read, so be it."
+=head2 $obj->remove
+
+Performs any clean up necessary to remove this object from the
+Bookmarks tree.
+
+=cut
+
+sub remove
+	{
+	return 1;
+	}
+	
+"if you want to believe everything you read, so be it.";
 
 __END__
 
@@ -83,7 +107,7 @@ __END__
 
 =head1 AUTHOR
 
-brian d foy E<lt>comdog@panix.comE<gt>
+brian d foy E<lt>bdfoy@cpan.orgE<gt>
 
 =head1 COPYRIGHT
 

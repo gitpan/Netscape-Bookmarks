@@ -1,6 +1,6 @@
 package Netscape::Bookmarks::Alias;
 # $Revision: 1.1.1.1 $
-# $Id: Alias.pm,v 1.1.1.1 2001/08/08 18:03:32 comdog Exp $
+# $Id: Alias.pm,v 1.1.1.1 2002/01/08 16:43:24 comdog Exp $
 
 =head1 NAME
 
@@ -44,7 +44,13 @@ use Netscape::Bookmarks::Link;
 @EXPORT_OK = qw();
 @ISA       = qw();
 
-=item new( ALIASID )
+=item $obj = Netscape::Bookmarks::Alias->new( ALIASID )
+
+Creates a new C<Netscape::Bookmarks::Alias> object with the ALIASOF
+attribute value of ALIASID.  This object relies on a corresponding
+C<Netscape::Bookmarks::Link> object with the same ALIASID, although
+C<new> does not check to see if that object exists (although it probably
+should).
 
 =cut
 
@@ -64,7 +70,7 @@ sub new
 
 =item $obj->alias_of()
 
-Returns the alias key for this alias
+Returns the alias key for this C<Netscape::Bookmarks::Alias> object.
 
 =cut
 
@@ -79,7 +85,7 @@ sub alias_of
 
 Returns the target Link of the given alias key.  The return value
 is a C<Netscape::Bookmarks::Link> object if the target exists, or
-undef in scalar context or the empty list in list context if the 
+C<undef> in scalar context or the empty list in list context if the 
 target does not exist. If you want to simply check to see if a 
 target exists, use C<target_exists>.
 
@@ -105,8 +111,8 @@ sub add_target
 	my $target   = shift; #link reference
 	my $alias_id = shift;
 	
-	($$target)->aliasid($alias_id);
-	$aliases{$alias_id} = $$target;
+	$target->aliasid($alias_id);
+	$aliases{$alias_id} = $target;
 	}
 
 =item target_exists( TARGET_KEY )
@@ -122,14 +128,62 @@ sub target_exists
 	
 	exists $aliases{$target} ? 1 : 0;
 	}	
+
+=item $obj->as_string()
+
+Returns a string representation on the alias.  This is
+almost identical from the representation of the link which
+is aliases except that the ALIASID attribute is changed
+to the ALIASOF attribute.
+
+=cut
+
+sub as_string
+	{
+	my $self = shift;
 	
+	my $string = $self->target->as_string;
+	
+	$string =~ s/ALIASID/ALIASOF/;
+	
+	return $string;
+	}
+
+=head2 $obj->title()	
+
+Returns the tile of the Alias.
+
+=cut
+
+sub title
+	{
+	my $self = shift;
+	
+	return "Alias: " . $self->target->title;
+	}
+
+=head2 $obj->remove()
+
+Performs any clean up necessary to remove this object from the
+Bookmarks tree. Although this method does not affect the Link object
+which is its target, it probably should.  
+
+=cut
+
+sub remove
+	{
+	my $self = shift;
+	
+	return 1;
+	}
+
 "if you want to believe everything you read, so be it.";
 
 =back
 
 =head1 AUTHOR
 
-brian d foy E<lt>comdog@panix.comE<gt>
+brian d foy E<lt>bdfoy@cpan.orgE<gt>
 
 =head1 COPYRIGHT
 
@@ -141,7 +195,7 @@ my best to incorporate them into future versions.
 
 =head1 SEE ALSO
 
-L<Netscape::Bookmarks>
+L<Netscape::Bookmarks>, L<Netscape::Bookmarks::Link>
 
 =cut
 
