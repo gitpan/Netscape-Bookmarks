@@ -2,8 +2,8 @@ Changes
 MANIFEST
 Makefile.PL
 Bookmarks.html
-Netscape/Bookmarks.pm
-Netscape/Bookmarks/Category.pm
-Netscape/Bookmarks/Link.pm
-Netscape/Bookmarks/Alias.pm
-Netscape/Bookmarks/Separator.pm
+Bookmarks.pm
+Category/Category.pm
+Link/Link.pm
+Alias/Alias.pm
+Separator/Separator.pm

@@ -1,5 +1,9 @@
 Revision history for Perl extension Netscape::Bookmarks.
 
+1.2	Thu Apr  5 01:02:00 EST 2001
+	- fixed disappearing link comment bug identified
+	by Daniel Hottinger <TheHotti@gmx.com>.
+
 0.92  Wed Jan 24 14:47:25 EST 2001
 	- minor doc fixes
 

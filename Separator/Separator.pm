@@ -1,4 +1,7 @@
 package Netscape::Bookmarks::Separator;
+# $Revision: 1.2 $
+# $Id: Separator.pm,v 1.2 2001/04/05 05:42:43 brian Exp $
+
 use strict;
 
 use subs qw();
@@ -8,7 +11,7 @@ use Exporter;
 
 use URI::URL;
 
-$VERSION = 0.91;
+($VERSION) = q$Revision: 1.2 $ =~ m/(\d+\.\d+)\s*$/;
 
 @EXPORT    = qw();
 @EXPORT_OK = qw();

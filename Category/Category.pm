@@ -1,8 +1,10 @@
 package Netscape::Bookmarks::Category;
-use strict;
+# $Revision: 1.3 $
+# $Id: Category.pm,v 1.3 2001/04/05 05:55:15 brian Exp $
 
+use strict;
 use subs qw();
-use vars qw($VERSION $ERROR @EXPORT @EXPORT_OK @ISA	$LAST_ID %IDS);
+use vars qw($VERSION $ERROR @EXPORT @EXPORT_OK @ISA $LAST_ID %IDS);
 
 use Exporter;
 
@@ -15,7 +17,7 @@ use constant TAB             => '    ';
 use constant FOLDED_TRUE     => 1;
 use constant FOLDED_FALSE    => 0;
 	
-$VERSION = 0.91;
+($VERSION) = q$Revision: 1.3 $ =~ m/(\d+\.\d+)\d*$/;
 %IDS     = ();
 $LAST_ID = -1;
 

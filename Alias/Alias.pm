@@ -1,4 +1,7 @@
 package Netscape::Bookmarks::Alias;
+# $Revision: 1.2 $
+# $Id: Alias.pm,v 1.2 2001/04/05 06:00:23 brian Exp $
+
 use strict;
 
 use subs qw();
@@ -8,7 +11,7 @@ use Exporter;
 
 use Netscape::Bookmarks::Link;
 
-$VERSION = 0.91;
+($VERSION) = q$Revision: 1.2 $ =~ m/(\d+\.\d+)\s*$/;
 
 @EXPORT    = qw();
 @EXPORT_OK = qw();

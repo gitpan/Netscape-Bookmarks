@@ -1,8 +1,12 @@
 package Netscape::Bookmarks;
+# $Revision: 1.2 $
+# $Id: Bookmarks.pm,v 1.2 2001/04/05 05:57:52 brian Exp $
+
 use strict;
 
 use subs qw();
 use vars qw(@ISA
+			$DEBUG
 			$VERSION
 			@category_stack
 			$flag
@@ -23,7 +27,7 @@ use Netscape::Bookmarks::Category;
 use Netscape::Bookmarks::Link;
 use Netscape::Bookmarks::Separator;
 
-$VERSION = 0.92;
+($VERSION) = q$Revision: 1.2 $ =~ m/(\d+\.\d+)\s*$/;
 @ISA=qw(HTML::Parser);
 
 $ID = 0;
@@ -199,12 +203,16 @@ sub text
 	}
 
 sub end
-	{
+    {
     my($self, $tag, $attr) = @_;
     
     $text_flag = 0;
     pop @category_stack   if $tag eq 'dl';
-    $current_link = undef if $tag eq 'a';	
+	# what does the next line do and why?
+	# if it is there then the <dd> part of a link is discarded
+	# not having this line doesn't seem to break things.
+	# bug identified by Daniel Hottinger <TheHotti@gnx.net>
+    #$current_link = undef if $tag eq 'a';	
     $flag = undef;
     }
     

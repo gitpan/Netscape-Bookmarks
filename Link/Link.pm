@@ -1,14 +1,17 @@
 package Netscape::Bookmarks::Link;
+# $Revision: 1.4 $
+# $Id: Link.pm,v 1.4 2001/04/05 05:44:52 brian Exp $
+
 use strict;
 
 use subs qw();
-use vars qw($VERSION $ERROR @EXPORT @EXPORT_OK @ISA);
+use vars qw($DEBUG $VERSION $ERROR @EXPORT @EXPORT_OK @ISA);
 
 use Exporter;
 
 use URI::URL;
 
-$VERSION = 0.91;
+($VERSION)   = q$Revision: 1.4 $ =~ m/(\d+\.\d+)\s*$/;
 
 @EXPORT    = qw();
 @EXPORT_OK = qw();
@@ -165,7 +168,7 @@ sub as_string
 	$last_visit = $last_visit ? qq|LAST_VISIT="$last_visit" | : qq|LAST_VISIT="0" |;
 	$last_modified = $last_modified ? qq|LAST_MODIFIED="$last_modified"| : qq|LAST_MODIFIED="0"|;
 
-	my $desc = "\n<DD>" . $self->description if $self->description;
+	my $desc = "\n\t<DD>" . $self->description if $self->description;
 	return qq|<A HREF="$link" $aliasof$aliasid$add_date$last_visit$last_modified>$title</A>$desc|;
 	}
 
