@@ -1,6 +1,5 @@
 package Netscape::Bookmarks::Separator;
-# $Revision: 1.3 $
-# $Id: Separator.pm,v 1.3 2002/05/27 01:19:09 comdog Exp $
+# $Id: Separator.pm,v 1.5 2002/09/23 21:33:34 comdog Exp $
 
 =head1 NAME
 
@@ -10,12 +9,12 @@ Netscape::Bookmarks::Separator	- manipulate, or create Netscape Bookmarks files
 
 	use Netscape::Bookmarks::Category;
 	use Netscape::Bookmarks::Separator;
-  
+
 	#add a separator to a category listing
 	my $category  = new Netscape::Bookmarks::Category { ... };
 	my $separator = new Netscape::Bookmarks::Separator;
 	my $category->add($separator);
-  
+
 	#print the separator
 	#note that Netscape::Category::as_string does this for you
 	print $separator->as_string;
@@ -42,31 +41,39 @@ use Exporter;
 
 use URI::URL;
 
-($VERSION) = q$Revision: 1.3 $ =~ m/(\d+\.\d+)\s*$/;
+($VERSION) = q$Revision: 1.5 $ =~ m/(\d+\.\d+)\s*$/;
 
 @EXPORT    = qw();
 @EXPORT_OK = qw();
 @ISA       = qw(Netscape::Bookmarks::AcceptVisitor);
 
-=head2 Netscape::Bookmarks::Separator->new
+my $singleton = undef;
+
+=item Netscape::Bookmarks::Separator->new
 
 Creates a new Separator object.  This method takes no arguments.
+This object represents a Singleton object.  The module only
+makes on instance which everybody else shares.
 
 =cut
 
 sub new
 	{
+	return $singleton if defined $singleton;
+
 	my $class  = shift;
-	
+
 	my $n = '';
 	my $self = \$n;
-	
+
 	bless $self, $class;
-				
-	$self;
+
+	$singleton = $self;
+
+	$singleton;
 	}
-	
-=head2 $obj->as_string
+
+=item $obj->as_string
 
 Prints the separator object in the Netscape bookmark format.  One should
 not have to do this as Netscape::Bookmarks::Category will take care of it.
@@ -75,7 +82,7 @@ not have to do this as Netscape::Bookmarks::Category will take care of it.
 
 sub as_string { "<HR>" }
 
-=head2 $obj->title
+=item $obj->title
 
 Prints a string to represent a separator.  This method exists to
 round out polymorphism among the  Netscape::* classes.  The
@@ -88,7 +95,7 @@ sub title
 	return "-" x 50;
 	}
 
-=head2 $obj->remove
+=item $obj->remove
 
 Performs any clean up necessary to remove this object from the
 Bookmarks tree.
@@ -99,10 +106,8 @@ sub remove
 	{
 	return 1;
 	}
-	
+
 "if you want to believe everything you read, so be it.";
-	
-__END__
 
 =back
 
@@ -111,6 +116,8 @@ __END__
 brian d foy E<lt>bdfoy@cpan.orgE<gt>
 
 =head1 COPYRIGHT
+
+Copyright 2002, brian d foy, All rights reserved.
 
 This program is free software; you can redistribute it
 and/or modify it under the same terms as Perl itself.
