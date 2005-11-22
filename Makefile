@@ -22,7 +22,7 @@
 
 # --- MakeMaker const_config section:
 
-# These definitions are from config.sh (via /usr/local/lib/perl5/5.8.4/darwin-2level/Config.pm)
+# These definitions are from config.sh (via /usr/local/lib/perl5/5.8.7/darwin-2level/Config.pm)
 
 # They may have been overridden via Makefile.PL or on the command line
 AR = ar
@@ -30,18 +30,18 @@ CC = cc
 CCCDLFLAGS =  
 CCDLFLAGS =  
 DLEXT = bundle
-DLSRC = dl_dyld.xs
+DLSRC = dl_dlopen.xs
 LD = env MACOSX_DEPLOYMENT_TARGET=10.3 cc
-LDDLFLAGS =  -bundle -undefined dynamic_lookup
-LDFLAGS = 
+LDDLFLAGS =  -bundle -undefined dynamic_lookup -L/usr/local/lib
+LDFLAGS =  -L/usr/local/lib
 LIBC = /usr/lib/libc.dylib
 LIB_EXT = .a
 OBJ_EXT = .o
 OSNAME = darwin
-OSVERS = 7.3.1
-RANLIB = /usr/bin/ar ts
-SITELIBEXP = /usr/local/lib/perl5/site_perl/5.8.4
-SITEARCHEXP = /usr/local/lib/perl5/site_perl/5.8.4/darwin-2level
+OSVERS = 8.2.0
+RANLIB = :
+SITELIBEXP = /usr/local/lib/perl5/site_perl/5.8.7
+SITEARCHEXP = /usr/local/lib/perl5/site_perl/5.8.7/darwin-2level
 SO = dylib
 EXE_EXT = 
 FULL_AR = /usr/bin/ar
@@ -54,11 +54,11 @@ AR_STATIC_ARGS = cr
 DIRFILESEP = /
 NAME = Netscape::Bookmarks
 NAME_SYM = Netscape_Bookmarks
-VERSION = 1.6
+VERSION = 1.7
 VERSION_MACRO = VERSION
-VERSION_SYM = 1_6
+VERSION_SYM = 1_7
 DEFINE_VERSION = -D$(VERSION_MACRO)=\"$(VERSION)\"
-XS_VERSION = 1.6
+XS_VERSION = 1.7
 XS_VERSION_MACRO = XS_VERSION
 XS_DEFINE_VERSION = -D$(XS_VERSION_MACRO)=\"$(XS_VERSION)\"
 INST_ARCHLIB = blib/arch
@@ -75,15 +75,15 @@ PREFIX =
 PERLPREFIX = /usr/local
 SITEPREFIX = /usr/local
 VENDORPREFIX = 
-INSTALLPRIVLIB = $(PERLPREFIX)/lib/perl5/5.8.4
+INSTALLPRIVLIB = $(PERLPREFIX)/lib/perl5/5.8.7
 DESTINSTALLPRIVLIB = $(DESTDIR)$(INSTALLPRIVLIB)
-INSTALLSITELIB = $(SITEPREFIX)/lib/perl5/site_perl/5.8.4
+INSTALLSITELIB = $(SITEPREFIX)/lib/perl5/site_perl/5.8.7
 DESTINSTALLSITELIB = $(DESTDIR)$(INSTALLSITELIB)
 INSTALLVENDORLIB = 
 DESTINSTALLVENDORLIB = $(DESTDIR)$(INSTALLVENDORLIB)
-INSTALLARCHLIB = $(PERLPREFIX)/lib/perl5/5.8.4/darwin-2level
+INSTALLARCHLIB = $(PERLPREFIX)/lib/perl5/5.8.7/darwin-2level
 DESTINSTALLARCHLIB = $(DESTDIR)$(INSTALLARCHLIB)
-INSTALLSITEARCH = $(SITEPREFIX)/lib/perl5/site_perl/5.8.4/darwin-2level
+INSTALLSITEARCH = $(SITEPREFIX)/lib/perl5/site_perl/5.8.7/darwin-2level
 DESTINSTALLSITEARCH = $(DESTDIR)$(INSTALLSITEARCH)
 INSTALLVENDORARCH = 
 DESTINSTALLVENDORARCH = $(DESTDIR)$(INSTALLVENDORARCH)
@@ -107,16 +107,16 @@ INSTALLSITEMAN3DIR = $(SITEPREFIX)/man/man3
 DESTINSTALLSITEMAN3DIR = $(DESTDIR)$(INSTALLSITEMAN3DIR)
 INSTALLVENDORMAN3DIR = 
 DESTINSTALLVENDORMAN3DIR = $(DESTDIR)$(INSTALLVENDORMAN3DIR)
-PERL_LIB = /usr/local/lib/perl5/5.8.4
-PERL_ARCHLIB = /usr/local/lib/perl5/5.8.4/darwin-2level
+PERL_LIB = /usr/local/lib/perl5/5.8.7
+PERL_ARCHLIB = /usr/local/lib/perl5/5.8.7/darwin-2level
 LIBPERL_A = libperl.a
 FIRST_MAKEFILE = Makefile
 MAKEFILE_OLD = $(FIRST_MAKEFILE).old
 MAKE_APERL_FILE = $(FIRST_MAKEFILE).aperl
 PERLMAINCC = $(CC)
-PERL_INC = /usr/local/lib/perl5/5.8.4/darwin-2level/CORE
-PERL = /usr/bin/perl
-FULLPERL = /usr/bin/perl
+PERL_INC = /usr/local/lib/perl5/5.8.7/darwin-2level/CORE
+PERL = /usr/local/bin/perl
+FULLPERL = /usr/local/bin/perl
 ABSPERL = $(PERL)
 PERLRUN = $(PERL)
 FULLPERLRUN = $(FULLPERL)
@@ -128,7 +128,7 @@ PERL_CORE = 0
 PERM_RW = 644
 PERM_RWX = 755
 
-MAKEMAKER   = /usr/local/lib/perl5/5.8.4/ExtUtils/MakeMaker.pm
+MAKEMAKER   = /usr/local/lib/perl5/5.8.7/ExtUtils/MakeMaker.pm
 MM_VERSION  = 6.17
 MM_REVISION = 1.133
 
@@ -255,7 +255,7 @@ RCS_LABEL = rcs -Nv$(VERSION_SYM): -q
 DIST_CP = best
 DIST_DEFAULT = tardist
 DISTNAME = Netscape-Bookmarks
-DISTVNAME = Netscape-Bookmarks-1.6
+DISTVNAME = Netscape-Bookmarks-1.7
 
 
 # --- MakeMaker macro section:
@@ -323,21 +323,21 @@ config :: $(INST_ARCHAUTODIR)$(DIRFILESEP).exists
 config :: $(INST_AUTODIR)$(DIRFILESEP).exists
 	$(NOECHO) $(NOOP)
 
-$(INST_AUTODIR)/.exists :: /usr/local/lib/perl5/5.8.4/darwin-2level/CORE/perl.h
+$(INST_AUTODIR)/.exists :: /usr/local/lib/perl5/5.8.7/darwin-2level/CORE/perl.h
 	$(NOECHO) $(MKPATH) $(INST_AUTODIR)
-	$(NOECHO) $(EQUALIZE_TIMESTAMP) /usr/local/lib/perl5/5.8.4/darwin-2level/CORE/perl.h $(INST_AUTODIR)/.exists
+	$(NOECHO) $(EQUALIZE_TIMESTAMP) /usr/local/lib/perl5/5.8.7/darwin-2level/CORE/perl.h $(INST_AUTODIR)/.exists
 
 	-$(NOECHO) $(CHMOD) $(PERM_RWX) $(INST_AUTODIR)
 
-$(INST_LIBDIR)/.exists :: /usr/local/lib/perl5/5.8.4/darwin-2level/CORE/perl.h
+$(INST_LIBDIR)/.exists :: /usr/local/lib/perl5/5.8.7/darwin-2level/CORE/perl.h
 	$(NOECHO) $(MKPATH) $(INST_LIBDIR)
-	$(NOECHO) $(EQUALIZE_TIMESTAMP) /usr/local/lib/perl5/5.8.4/darwin-2level/CORE/perl.h $(INST_LIBDIR)/.exists
+	$(NOECHO) $(EQUALIZE_TIMESTAMP) /usr/local/lib/perl5/5.8.7/darwin-2level/CORE/perl.h $(INST_LIBDIR)/.exists
 
 	-$(NOECHO) $(CHMOD) $(PERM_RWX) $(INST_LIBDIR)
 
-$(INST_ARCHAUTODIR)/.exists :: /usr/local/lib/perl5/5.8.4/darwin-2level/CORE/perl.h
+$(INST_ARCHAUTODIR)/.exists :: /usr/local/lib/perl5/5.8.7/darwin-2level/CORE/perl.h
 	$(NOECHO) $(MKPATH) $(INST_ARCHAUTODIR)
-	$(NOECHO) $(EQUALIZE_TIMESTAMP) /usr/local/lib/perl5/5.8.4/darwin-2level/CORE/perl.h $(INST_ARCHAUTODIR)/.exists
+	$(NOECHO) $(EQUALIZE_TIMESTAMP) /usr/local/lib/perl5/5.8.7/darwin-2level/CORE/perl.h $(INST_ARCHAUTODIR)/.exists
 
 	-$(NOECHO) $(CHMOD) $(PERM_RWX) $(INST_ARCHAUTODIR)
 
@@ -345,9 +345,9 @@ config :: $(INST_MAN3DIR)$(DIRFILESEP).exists
 	$(NOECHO) $(NOOP)
 
 
-$(INST_MAN3DIR)/.exists :: /usr/local/lib/perl5/5.8.4/darwin-2level/CORE/perl.h
+$(INST_MAN3DIR)/.exists :: /usr/local/lib/perl5/5.8.7/darwin-2level/CORE/perl.h
 	$(NOECHO) $(MKPATH) $(INST_MAN3DIR)
-	$(NOECHO) $(EQUALIZE_TIMESTAMP) /usr/local/lib/perl5/5.8.4/darwin-2level/CORE/perl.h $(INST_MAN3DIR)/.exists
+	$(NOECHO) $(EQUALIZE_TIMESTAMP) /usr/local/lib/perl5/5.8.7/darwin-2level/CORE/perl.h $(INST_MAN3DIR)/.exists
 
 	-$(NOECHO) $(CHMOD) $(PERM_RWX) $(INST_MAN3DIR)
 
@@ -461,7 +461,7 @@ metafile :
 	$(NOECHO) $(ECHO) '# http://module-build.sourceforge.net/META-spec.html' > META.yml
 	$(NOECHO) $(ECHO) '#XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#' >> META.yml
 	$(NOECHO) $(ECHO) 'name:         Netscape-Bookmarks' >> META.yml
-	$(NOECHO) $(ECHO) 'version:      1.6' >> META.yml
+	$(NOECHO) $(ECHO) 'version:      1.7' >> META.yml
 	$(NOECHO) $(ECHO) 'version_from: lib/Bookmarks.pm' >> META.yml
 	$(NOECHO) $(ECHO) 'installdirs:  site' >> META.yml
 	$(NOECHO) $(ECHO) 'requires:' >> META.yml
@@ -692,7 +692,7 @@ $(FIRST_MAKEFILE) : Makefile.PL $(CONFIGDEP)
 
 # --- MakeMaker makeaperl section ---
 MAP_TARGET    = perl
-FULLPERL      = /usr/bin/perl
+FULLPERL      = /usr/local/bin/perl
 
 $(MAP_TARGET) :: static $(MAKE_APERL_FILE)
 	$(MAKE) -f $(MAKE_APERL_FILE) $@
@@ -718,7 +718,7 @@ testdb :: testdb_$(LINKTYPE)
 test :: $(TEST_TYPE)
 
 test_dynamic :: pure_all
-	PERL_DL_NONLAZY=1 $(FULLPERLRUN) "-MTest::Manifest" "-e" "run_t_manifest($(TEST_VERBOSE), '$(INST_LIB)', '$(INST_ARCHLIB)')"
+	$(FULLPERLRUN) "-MTest::Manifest" "-e" "run_t_manifest($(TEST_VERBOSE), '$(INST_LIB)', '$(INST_ARCHLIB)', $(TEST_LEVEL) )"
 
 testdb_dynamic :: pure_all
 	PERL_DL_NONLAZY=1 $(FULLPERLRUN) $(TESTDB_SW) "-I$(INST_LIB)" "-I$(INST_ARCHLIB)" $(TEST_FILE)
@@ -732,7 +732,7 @@ testdb_static :: testdb_dynamic
 # --- MakeMaker ppd section:
 # Creates a PPD (Perl Package Description) for a binary distribution.
 ppd:
-	$(NOECHO) $(ECHO) '<SOFTPKG NAME="$(DISTNAME)" VERSION="1,6,0,0">' > $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '<SOFTPKG NAME="$(DISTNAME)" VERSION="1,7,0,0">' > $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '    <TITLE>$(DISTNAME)</TITLE>' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '    <ABSTRACT></ABSTRACT>' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '    <AUTHOR></AUTHOR>' >> $(DISTNAME).ppd
