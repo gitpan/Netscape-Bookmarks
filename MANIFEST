@@ -3,14 +3,18 @@ bookmark_files/Bookmarks4.7.html
 bookmark_files/Favorites.html
 bookmark_files/iCab.Hotlist.html
 Changes
+examples/README
 lib/Alias.pm
 lib/Bookmarks.pm
 lib/Category.pm
 lib/Link.pm
 lib/Separator.pm
+LICENSE
 Makefile.PL
 MANIFEST
 MANIFEST.SKIP
+META.yml			Module meta-data (added by MakeMaker)
+README
 t/alias.t
 t/bookmarks.t
 t/category.t
@@ -21,6 +25,3 @@ t/pod_coverage.t
 t/prereq.t
 t/separator.t
 t/test_manifest
-META.yml                                 Module meta-data (added by MakeMaker)
-README
-LICENSE
