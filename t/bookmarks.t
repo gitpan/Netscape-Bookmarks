@@ -1,33 +1,42 @@
-# Before `make install' is performed this script should be runnable with
-# `make test'. After `make install' it should work as `perl test.pl'
+# $Id: bookmarks.t,v 1.5 2004/09/02 05:23:25 comdog Exp $
+use strict;
 
-######################### We start with some black magic to print on failure.
+use Test::More tests => 3;
+use Test::File;
+use Text::Diff qw(diff);
 
-# Change 1..1 below to 1..last_test_to_print .
-# (It may become useful if the test is moved to ./t subdirectory.)
-
-BEGIN { $| = 1; print "1..2\n"; }
-END {print "not ok 1\n" unless $loaded;}
 use Netscape::Bookmarks;
-$loaded = 1;
-print "ok 1\n";
 
-######################### End of black magic.
+my $File = 'bookmark_files/Bookmarks.html';
+my $Tmp  = $File . '.tmp';
 
-# Insert your test code below (better if it prints "ok 13"
-# (correspondingly "not ok 13") depending on the success of chunk 13
-# of the test code):
+file_exists_ok( $File );
+my $netscape = Netscape::Bookmarks->new( $File );
+isa_ok( $netscape, 'Netscape::Bookmarks::Category' );
 
-eval {
-my $netscape = Netscape::Bookmarks->new( "bookmark_files/Bookmarks.html" );
-
-open FILE, "> bookmark_files/Bookmarks_tmp.html" or die "Could not open tmp file: $!";
-print FILE $netscape->as_string;
-close FILE;
+{
+open my $fh, "> $Tmp" 
+	or print "bail out! Could not open tmp file: $!";
+print $fh $netscape->as_string;
+close $fh;
 };
 
-print STDERR $@ if $@;
+my $diff = diff $File, $Tmp, { CONTEXT => 0 };
+my $ok   = not $diff;
 
-print $@ ? 'not ' : '', 'ok 2', "\n";
+ok( $ok, 'Files are the same' );
 
-# END { unlink "bookmark_files/Bookmarks_tmp.html" }
+=pod
+
+# what was this test for?  where is this file?
+
+file_exists_ok( "bookmark_files/bookmarks.curtis.html" );
+$netscape = Netscape::Bookmarks->new( "bookmark_files/bookmarks.curtis.html" );
+isa_ok( $netscape, 'Netscape::Bookmarks::Category' );
+
+=cut
+
+print STDERR "----- bookmarks.t diff is\n$diff" if $diff;
+
+END { unlink $Tmp }
+
