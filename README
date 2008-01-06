@@ -1,4 +1,8 @@
-$Id: README,v 1.1 2007/10/02 08:04:26 comdog Exp $
+$Id: README,v 1.1 2004/09/16 01:55:43 comdog Exp $
+
+Although this module's namespace is "Netscape", the
+name is merely historic.  This module should also
+work for the Mozilla line of browsers.
 
 You can install this using in the usual Perl fashion
 
@@ -19,7 +23,7 @@ perldoc directly on the module file.
 	
 This module is also in CVS on SourceForge
 
-	http://sourceforge.net/projects/nsbookmarks/
+	http://sourceforge.net/projects/brian-d-foy/
 
 
 Enjoy, 

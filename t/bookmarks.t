@@ -1,42 +1,68 @@
-# $Id: bookmarks.t,v 1.5 2004/09/02 05:23:25 comdog Exp $
+#!/usr/bin/perl
+
+use warnings;
 use strict;
 
-use Test::More tests => 3;
-use Test::File;
-use Text::Diff qw(diff);
+use Test::More 'no_plan';
 
-use Netscape::Bookmarks;
+use File::Spec;
 
-my $File = 'bookmark_files/Bookmarks.html';
-my $Tmp  = $File . '.tmp';
+my $class = 'Netscape::Bookmarks';
 
-file_exists_ok( $File );
-my $netscape = Netscape::Bookmarks->new( $File );
-isa_ok( $netscape, 'Netscape::Bookmarks::Category' );
+use_ok( $class );
 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# open a file that should be there
 {
-open my $fh, "> $Tmp" 
-	or print "bail out! Could not open tmp file: $!";
-print $fh $netscape->as_string;
-close $fh;
-};
+my $file = File::Spec->catfile( qw(bookmark_files Bookmarks.html) );
 
-my $diff = diff $File, $Tmp, { CONTEXT => 0 };
-my $ok   = not $diff;
+ok( -e $file, "Test file [$file] is there" );
 
-ok( $ok, 'Files are the same' );
+my $result = eval {
+	my $netscape = $class->new( $file );
+	isa_ok( $netscape, $class->top_class );
+	
+	open FILE, "> bookmark_files/Bookmarks_tmp.html" 
+		or die "Could not open tmp file: $!";
+	print FILE $netscape->as_string;
+	close FILE;
+	1;
+	};
 
-=pod
+my $at = $@;
 
-# what was this test for?  where is this file?
+ok( $result );
+diag($at) unless $result;
+}
 
-file_exists_ok( "bookmark_files/bookmarks.curtis.html" );
-$netscape = Netscape::Bookmarks->new( "bookmark_files/bookmarks.curtis.html" );
-isa_ok( $netscape, 'Netscape::Bookmarks::Category' );
+END { unlink "bookmark_files/Bookmarks_tmp.html" }
 
-=cut
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# open a file that shouldn't be there
+{
+my $file = File::Spec->catfile( qw(bookmark_files foobarbaz.html) );
 
-print STDERR "----- bookmarks.t diff is\n$diff" if $diff;
+ok( ! -e $file, "Test file [$file] is not there (good)" );
 
-END { unlink $Tmp }
+my $result = eval {
+	my $netscape = $class->new( $file );
+	};
+
+ok( ! defined $result );
+}
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# open no file (so, start with fresh in memory object)
+{
+my $result = eval {
+	my $netscape = $class->new( );
+	isa_ok( $netscape, $class->top_class );
+	};
+
+ok( $result );
+my $at = $@;
+
+ok( $result );
+diag($at) unless $result;
+}
 

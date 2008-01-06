@@ -1,5 +1,6 @@
 package Netscape::Bookmarks::Separator;
-# $Id: Separator.pm,v 1.8 2007/10/02 07:30:34 comdog Exp $
+# $Revision: 1.6 $
+# $Id: Separator.pm,v 1.6 2008/01/06 19:51:45 comdog Exp $
 
 =head1 NAME
 
@@ -11,9 +12,9 @@ Netscape::Bookmarks::Separator	- manipulate, or create Netscape Bookmarks files
 	use Netscape::Bookmarks::Separator;
 
 	#add a separator to a category listing
-	my $category  = new Netscape::Bookmarks::Category { ... };
-	my $separator = new Netscape::Bookmarks::Separator;
-	my $category->add($separator);
+	my $category  = Netscape::Bookmarks::Category->new( { ... } );
+	my $separator = Netscape::Bookmarks::Separator->new();
+	my $category->add( $separator );
 
 	#print the separator
 	#note that Netscape::Category::as_string does this for you
@@ -23,7 +24,7 @@ Netscape::Bookmarks::Separator	- manipulate, or create Netscape Bookmarks files
 
 Store a Netscape bookmark separator object.
 
-=head1 METHODS
+=head2 Methods
 
 =over 4
 
@@ -31,28 +32,21 @@ Store a Netscape bookmark separator object.
 
 use strict;
 
-use base qw( Netscape::Bookmarks::AcceptVisitor Netscape::Bookmarks::Isa );
 use subs qw();
-use vars qw( $VERSION );
+use vars qw($VERSION $ERROR);
 
-use Exporter;
+use URI::URL;
 
-$VERSION = sprintf "%d.%02d", q$Revision: 1.8 $ =~ m/(\d+) \. (\d+)/xg;
-
-my $singleton = undef;
+($VERSION) = q$Revision: 1.6 $ =~ m/(\d+\.\d+)\s*$/;
 
 =item Netscape::Bookmarks::Separator->new
 
 Creates a new Separator object.  This method takes no arguments.
-This object represents a Singleton object.  The module only
-makes on instance which everybody else shares.
 
 =cut
 
 sub new
 	{
-	return $singleton if defined $singleton;
-
 	my $class  = shift;
 
 	my $n = '';
@@ -60,9 +54,7 @@ sub new
 
 	bless $self, $class;
 
-	$singleton = $self;
-
-	$singleton;
+	$self;
 	}
 
 =item $obj->as_string
@@ -72,36 +64,26 @@ not have to do this as Netscape::Bookmarks::Category will take care of it.
 
 =cut
 
-sub as_string { "<HR>" }
-
-=item $obj->title
-
-Prints a string to represent a separator.  This method exists to
-round out polymorphism among the  Netscape::* classes.  The
-string does not have a trailing newline.
-
-=cut
-
-sub title
+sub as_string
 	{
-	return "-" x 50;
+	return "<HR>";
 	}
 
-=item $obj->remove
+"if you want to believe everything you read, so be it."
 
-Performs any clean up necessary to remove this object from the
-Bookmarks tree.
-
-=cut
-
-sub remove
-	{
-	return 1;
-	}
-
-"if you want to believe everything you read, so be it.";
+__END__
 
 =back
+
+=head1 SOURCE AVAILABILITY
+
+This source is part of a SourceForge project which always has the
+latest sources in CVS, as well as all of the previous releases.
+
+	http://sourceforge.net/projects/nsbookmarks/
+
+If, for some reason, I disappear from the world, one of the other
+members of the project can shepherd this module appropriately.
 
 =head1 AUTHOR
 

@@ -1,38 +1,53 @@
-$Id: Changes,v 1.5 2007/10/02 08:12:47 comdog Exp $
+$Id: Changes,v 1.10 2008/01/06 19:53:29 comdog Exp $
 Revision history for Perl extension Netscape::Bookmarks.
 
-2.02 - Tue Oct  2 03:12:51 2007
-	* Fixed up many distro problems. No need to upgrade.
+1.95 - Sun Jan  6 13:52:04 2008
+	* Netscape::Bookmarks was calling Netscape::Bookmarks::Category::new
+	incorrectly by not passing a hash reference. This causes the 
+	example in the docs to fail. I've fixed that.
+	* You should upgrade to get this fix.
 
-2.2_01 Mon Sep 23 20:33:04 CDT 2002
-	---> still a beta, but not as much as before <---
-	- added Mozilla support
+1.94 - Wed Jan 10 19:26:43 2007
+	* Updated license and copyright information
+	* No code changes, no need to upgrade
 
-2.1_03 Mon Sep 23 16:31:42 CDT 2002
-	---> still a beta release <---
-	- converted tests to Test::Builder
-	- check a few values for definedness before using
-	them ( thanks to Shayne )
-    - start adding Mozilla support
+1.92 - Mon Dec 11 03:40:55 2006
+	* Fixed some reference passing problems (Thanks to Ben Markines)
+	* Added LICENSE info
 
-2.1_02 Sun May 26 20:21:54 CDT 2002
-	---> still a beta release <---
-	- added a Visitor mechanism, and an introduce() function to 
-	Category.pm.
+1.91 - Sun Feb 12 17:59:48 2006
+	* Ben Markines identified a bug in as_string that kept it recursing
+	into the data structure. I wasn't derefercing a return value and
+	on the next go around, as_string() silently failed because it didn't
+	recognize the ref type. I've fixed that and added another branch to
+	warn about unknown object types.
 
-2.0_01 Sat Jan  5 06:25:20 EST 2002
-	---> this is a beta release <---
-	- lots of code changes to make things more clear for those that
-	like to read the source ;)
-	- fixed a trailing whitespace error for link description output
-	- added a recurse() function that walks the tree and calls your
-	provided subroutine
-	- added a sort_elements() method to Category.  it has a default
-	sort or you can provide your own.  make sure you read the docs
-	on this one though!
-	- improved some assessor methods to also set values if you provide
-	an argument
-	- added some example scripts for various tasks
+1.09 - Mon Dec 26 09:40:17 2005
+	* This distro fixes the ._Makefile.PL problem that 1.7 had. It seems 
+	Mac OS X tar is a bit stupid about such things, so I switched to 
+	fink's gnutar.
+
+	* Squashed a lot of warnings (thanks to Chris Dolan)
+
+	* Bookmarks.pm now sets a default title of "Bookmarks" for an empty
+	object (thanks to Chris Dolan)
+
+1.8 - Sun Dec 18 18:20:33 2005
+	* removed files starting in ._ (Mac artifacts). I can't seem to
+	get MANIFEST.SKIP to get rid of these files. I think TextWrangler
+	is doing something odd.
+
+	* cleaned up Category.pm and Link.pm to quash some warnings
+
+1.7 - Mon Nov 21 20:09:03 2005
+	* Netscape::Bookmarks::Category::add() had a de-ref error.
+	* I updated the docs to be more clear
+	* Everyone should upgrade
+
+1.6 - Wed Sep 15 21:08:13 2004
+* Distro cleanups
+* Fixed POD boo boos
+* Updated contact info in docs
 
 1.5 Mon Dec 10 02:15:01 EST 2001
 	- fixed numerous documentation errors

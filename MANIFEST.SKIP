@@ -1,0 +1,17 @@
+^Category/
+^Alias/
+^Link/
+^Separator/
+\.old
+\.bak
+.cvsignore
+.DS_Store
+.releaserc
+.lwpcookies
+CVS/
+Bookmarks_tmp.html
+^._
+test.pl
+blib\b
+Makefile$
+t/\.\#
